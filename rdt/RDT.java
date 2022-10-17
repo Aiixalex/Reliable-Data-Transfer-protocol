@@ -18,7 +18,7 @@ public class RDT {
 	public static final int MAX_BUF_SIZE = 3;  
 	public static final int GBN = 1;   // Go back N protocol
 	public static final int SR = 2;    // Selective Repeat
-	public static final int protocol = GBN;
+	public static int protocol = GBN;
 	
 	public static double lossRate = 0.0;
 	public static Random random = new Random(); 
@@ -35,10 +35,11 @@ public class RDT {
 	private ReceiverThread rcvThread;  
 	
 	
-	RDT (String dst_hostname_, int dst_port_, int local_port_) 
-	{
-		local_port = local_port_;
-		dst_port = dst_port_; 
+	RDT (String dst_hostname_, int dst_port_, int local_port_, int protocol_)
+    {
+        local_port = local_port_;
+        dst_port = dst_port_;
+        protocol = protocol_;
 		try {
 			 socket = new DatagramSocket(local_port);
 			 dst_ip = InetAddress.getByName(dst_hostname_);
@@ -54,10 +55,11 @@ public class RDT {
 		rcvThread.start();
 	}
 	
-	RDT (String dst_hostname_, int dst_port_, int local_port_, int sndBufSize, int rcvBufSize)
-	{
-		local_port = local_port_;
-		dst_port = dst_port_;
+	RDT (String dst_hostname_, int dst_port_, int local_port_, int sndBufSize, int rcvBufSize, int protocol_)
+    {
+        local_port = local_port_;
+        dst_port = dst_port_;
+        protocol = protocol_;
 		 try {
 			 socket = new DatagramSocket(local_port);
 			 dst_ip = InetAddress.getByName(dst_hostname_);
@@ -78,15 +80,13 @@ public class RDT {
 	
 	// called by app
 	// returns total number of sent bytes  
-	public int send(byte[] data, int size) {
-		
-		//****** complete
-		
+	public int send(byte[] data, int size) {		
 		// divide data into segments
 		
 		// put each segment into sndBuf
 		
 		// send using udp_send()
+		Utility.udp_send(data, socket, dst_ip, dst_port);
 		
 		// schedule timeout for segment(s) 
 			
@@ -99,7 +99,7 @@ public class RDT {
 	// returns number of bytes copied in buf
 	public int receive (byte[] buf, int size)
 	{
-		//*****  complete
+		
 		
 		return 0;   // fix
 	}
@@ -133,7 +133,6 @@ class RDTBuffer {
 		semEmpty = new Semaphore(bufSize, true);
 	}
 
-	
 	
 	// Put a segment in the next available slot in the buffer
 	public void putNext(RDTSegment seg) {		
@@ -199,6 +198,10 @@ class ReceiverThread extends Thread {
 		//                if seg contains data, put the data in rcvBuf and do any necessary 
 		//                             stuff (e.g, send ACK)
 		//
+		while () {
+			socket.receive(pkt);
+
+		}
 	}
 	
 	

@@ -12,6 +12,7 @@ import java.util.*;
 public class Utility {
 	
 	public static final int MAX_NETWORK_DELAY = 200; // msec
+	public static boolean corruption = false;  // corruption flag
 	
 	public static void udp_send (RDTSegment seg, DatagramSocket socket, 
 			InetAddress ip, int port) {
@@ -29,6 +30,13 @@ public class Utility {
 		seg.makePayload(payload);
 	
 		// corrupt some bits
+		if (corruption == true)
+        {
+            payload[Math.min(1, payload.length-1)] += 3;
+            payload[Math.min(16, payload.length-1)] += 3;
+            payload[Math.min(25, payload.length-1)] += 3;
+            payload[Math.min(32, payload.length-1)] += 3;
+        }
 		
 		// send over udp
 		// simulate random network delay
@@ -46,6 +54,21 @@ public class Utility {
 		System.out.flush();
 		//seg.dump();
 	}
+
+	public static byte[] subArray(byte[] orig, int index ,int length )
+    {
+        byte[] temp = null ;
+        if (index < orig.length)
+        {
+            length = Math.min(length, orig.length - index );
+            temp = new byte[length] ;
+            for(int i = 0 ;i < length ;i++ )
+            {
+                temp[i] = orig[index + i] ;
+            }
+        }
+        return temp;
+    }
 	
 	/* NOTE: the following methods do NOT handle conversion from 
 	network-byte order to host-byte order. The assumption is that 
